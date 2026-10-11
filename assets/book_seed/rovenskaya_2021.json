@@ -1,0 +1,312 @@
+{
+  "meta": {
+    "schema_version": 1,
+    "source_title": "Худеем по науке",
+    "author": "Светлана Ровенская",
+    "year": 2021,
+    "note": "Фрагменты данных из книги для локального приложения; не полный справочник КБЖУ."
+  },
+  "nutrients": [
+    {"code": "energy_kcal", "name": "Energy", "unit": "kcal", "nutrient_type": "macro", "description": "Калорийность"},
+    {"code": "protein", "name": "Protein", "unit": "g", "nutrient_type": "macro"},
+    {"code": "fat", "name": "Fat", "unit": "g", "nutrient_type": "macro"},
+    {"code": "carbohydrate", "name": "Carbohydrate", "unit": "g", "nutrient_type": "macro"},
+    {"code": "fiber", "name": "Fiber", "unit": "g", "nutrient_type": "macro"}
+  ],
+  "products": [
+    {
+      "code": "cottage_cheese_5pct",
+      "name": "Творог 5%",
+      "source": "book_example",
+      "source_ref": "Гл. 21.3, КБЖУ на 100 г",
+      "notes": "121/17/5/1.8 ккал/Б/Ж/У на 100 г"
+    },
+    {
+      "code": "rolled_oats_dry",
+      "name": "Геркулес (сухой)",
+      "source": "book_example",
+      "source_ref": "Гл. 21.3"
+    },
+    {
+      "code": "chicken_breast_raw",
+      "name": "Куриное филе (сырое)",
+      "source": "book_example",
+      "source_ref": "Гл. 21.3"
+    }
+  ],
+  "product_nutrient_values": [
+    {"product_code": "cottage_cheese_5pct", "nutrient_code": "energy_kcal", "value": 121, "basis_type": "per_100g"},
+    {"product_code": "cottage_cheese_5pct", "nutrient_code": "protein", "value": 17, "basis_type": "per_100g"},
+    {"product_code": "cottage_cheese_5pct", "nutrient_code": "fat", "value": 5, "basis_type": "per_100g"},
+    {"product_code": "cottage_cheese_5pct", "nutrient_code": "carbohydrate", "value": 1.8, "basis_type": "per_100g"},
+    {"product_code": "rolled_oats_dry", "nutrient_code": "energy_kcal", "value": 342, "basis_type": "per_100g"},
+    {"product_code": "rolled_oats_dry", "nutrient_code": "protein", "value": 12, "basis_type": "per_100g"},
+    {"product_code": "rolled_oats_dry", "nutrient_code": "fat", "value": 6, "basis_type": "per_100g"},
+    {"product_code": "rolled_oats_dry", "nutrient_code": "carbohydrate", "value": 60, "basis_type": "per_100g"},
+    {"product_code": "chicken_breast_raw", "nutrient_code": "energy_kcal", "value": 113, "basis_type": "per_100g"},
+    {"product_code": "chicken_breast_raw", "nutrient_code": "protein", "value": 24, "basis_type": "per_100g"},
+    {"product_code": "chicken_breast_raw", "nutrient_code": "fat", "value": 2, "basis_type": "per_100g"},
+    {"product_code": "chicken_breast_raw", "nutrient_code": "carbohydrate", "value": 0.4, "basis_type": "per_100g"}
+  ],
+  "formula_definitions": [
+    {
+      "code": "bmr_mifflin_male",
+      "name": "BMR (муж.), Миффлин — Сан Жеор",
+      "expression_template": "[9.99*weight_kg]+[6.25*height_cm]-[4.92*age_years]+5",
+      "variable_description": "weight_kg, height_cm, age_years",
+      "application_notes": "Гл. 20; затем умножить на коэффициент активности."
+    },
+    {
+      "code": "bmr_mifflin_female",
+      "name": "BMR (жен.), Миффлин — Сан Жеор",
+      "expression_template": "[9.99*weight_kg]+[6.25*height_cm]-[4.92*age_years]-161",
+      "variable_description": "weight_kg, height_cm, age_years",
+      "application_notes": "Гл. 20"
+    }
+  ],
+  "activity_levels": [
+    {"code": "sedentary", "multiplier_min": 1.2, "multiplier_max": 1.2, "description": "Минимальная активность / сидячая работа", "sort_order": 0},
+    {"code": "light", "multiplier_min": 1.3, "multiplier_max": 1.4, "description": "Лёгкая активность (≈3 трен./нед., прогулки)", "sort_order": 1},
+    {"code": "moderate", "multiplier_min": 1.5, "multiplier_max": 1.6, "description": "Средняя (спорт ~5 раз в неделю)", "sort_order": 2},
+    {"code": "high", "multiplier_min": 1.7, "multiplier_max": 1.8, "description": "Высокая (интенсивные тренировки ежедневно)", "sort_order": 3},
+    {"code": "extreme", "multiplier_min": 1.9, "multiplier_max": 2.0, "description": "Экстремальная (тяжёлый труд, спорт)", "sort_order": 4}
+  ],
+  "macro_norm_templates": [
+    {
+      "code": "who_macro_percent",
+      "norm_type": "who_percent",
+      "sex": "any",
+      "carb_min_pct": 50,
+      "carb_max_pct": 55,
+      "fat_min_pct": 30,
+      "fat_max_pct": 30,
+      "protein_min_pct": 15,
+      "protein_max_pct": 20,
+      "kcal_per_gram_protein": 4.1,
+      "kcal_per_gram_carb": 4.1,
+      "kcal_per_gram_fat": 9.3,
+      "notes": "Рекомендации ВОЗ из книги; для среднего уровня активности."
+    },
+    {
+      "code": "athlete_macro_percent",
+      "norm_type": "athlete_percent",
+      "sex": "any",
+      "carb_min_pct": 45,
+      "carb_max_pct": 65,
+      "fat_min_pct": 20,
+      "fat_max_pct": 35,
+      "protein_min_pct": 15,
+      "protein_max_pct": 35,
+      "notes": "БЖУ для занимающихся спортом (книга)."
+    },
+    {
+      "code": "book_example_anya_g_per_kg",
+      "norm_type": "g_per_kg_remainder_carbs",
+      "sex": "female",
+      "protein_g_per_kg_min": 1.5,
+      "protein_g_per_kg_max": 1.5,
+      "fat_g_per_kg_min": 0.8,
+      "fat_g_per_kg_max": 1.0,
+      "kcal_per_gram_protein": 4.1,
+      "kcal_per_gram_carb": 4.1,
+      "kcal_per_gram_fat": 9.3,
+      "notes": "Пример для Ани: белок 1.5 г/кг, жир 0.8–1 г/кг, углеводы из остатка калорий."
+    }
+  ],
+  "calorie_deficit_policies": [
+    {
+      "code": "ch20_default",
+      "deficit_percent_min": 10,
+      "deficit_percent_max": 20,
+      "rolling_average_days_min": 4,
+      "rolling_average_days_recommended": 5,
+      "weekly_weight_loss_ok_kg": 0.5,
+      "weekly_weight_loss_too_fast_kg": 0.8,
+      "adjustment_add_calories_when_too_fast": 50,
+      "adjustment_extra_deficit_percent_when_slow": 5,
+      "rationale_text": "Способ 1: средняя за несколько дней минус 10–15%; корректировки по динамике веса (книга)."
+    }
+  ],
+  "cooking_yield_factors": [
+    {"ingredient_key": "onion", "category": "vegetable", "yield_loss_percent": 25},
+    {"ingredient_key": "pumpkin", "category": "vegetable", "yield_loss_percent": 22},
+    {"ingredient_key": "potato", "category": "vegetable", "yield_loss_percent": 30},
+    {"ingredient_key": "zucchini", "category": "vegetable", "yield_loss_percent": 22},
+    {"ingredient_key": "cabbage", "category": "vegetable", "yield_loss_percent": 21},
+    {"ingredient_key": "carrot", "category": "vegetable", "yield_loss_percent": 17},
+    {"ingredient_key": "pork", "category": "meat", "yield_loss_percent": 35},
+    {"ingredient_key": "fish", "category": "fish", "yield_loss_percent_min": 15, "yield_loss_percent_max": 20},
+    {"ingredient_key": "lamb", "category": "meat", "yield_loss_percent": 40},
+    {"ingredient_key": "liver", "category": "meat", "yield_loss_percent": 30},
+    {"ingredient_key": "beef", "category": "meat", "yield_loss_percent": 35},
+    {"ingredient_key": "poultry", "category": "poultry", "yield_loss_percent_min": 25, "yield_loss_percent_max": 30}
+  ],
+  "advisory_rules": [
+    {
+      "rule_type": "portion_habit",
+      "context_tags": ["general"],
+      "condition_text": "Повседневное питание",
+      "severity": "info",
+      "recommendation": "Взвешивать продукты в сухом/сыром виде; планировать рацион с вечера.",
+      "is_automatable": false,
+      "source_ref": "Гл. 21.1"
+    },
+    {
+      "rule_type": "restaurant",
+      "context_tags": ["restaurant", "eating_out"],
+      "severity": "warning",
+      "recommendation": "Калорийность вне дома часто непредсказуема; минимизировать походы в кафе на этапе снижения веса.",
+      "is_automatable": false,
+      "source_ref": "Гл. 21.1"
+    }
+  ],
+  "meal_plans": [
+    {
+      "code": "rov_2021_ex1_day1",
+      "title": "Пример 1, день 1",
+      "source_book": "Худеем по науке",
+      "chapter_ref": "Гл. 22",
+      "example_number": 1,
+      "day_number": 1,
+      "target_calories": 1196,
+      "target_protein_g": 82,
+      "target_fat_g": 43,
+      "target_carb_g": 122,
+      "meals": [
+        {
+          "sort_order": 0,
+          "meal_label": "Завтрак",
+          "calories": 317,
+          "protein_g": 14,
+          "fat_g": 15,
+          "carb_g": 32,
+          "lines": [
+            {"sort_order": 0, "line_type": "dish_title", "content": "Конвертики из лаваша с яйцом и сыром"},
+            {"sort_order": 1, "line_type": "ingredient", "content": "лаваш", "amount_grams": 40},
+            {"sort_order": 2, "line_type": "ingredient", "content": "сыр", "amount_grams": 20},
+            {"sort_order": 3, "line_type": "ingredient", "content": "яйцо"},
+            {"sort_order": 4, "line_type": "dish_title", "content": "Чай + конфета"},
+            {"sort_order": 5, "line_type": "ingredient", "content": "конфета", "amount_grams": 15}
+          ]
+        },
+        {
+          "sort_order": 1,
+          "meal_label": "Обед",
+          "calories": 331,
+          "protein_g": 18,
+          "fat_g": 8,
+          "carb_g": 47,
+          "lines": [
+            {"sort_order": 0, "line_type": "dish_title", "content": "Ризотто с морепродуктами (одна порция из запаса на 2 дня)"},
+            {"sort_order": 1, "line_type": "ingredient", "content": "рис", "amount_grams": 80},
+            {"sort_order": 2, "line_type": "ingredient", "content": "оливковое масло", "amount_text": "2 ч.л."},
+            {"sort_order": 3, "line_type": "ingredient", "content": "морской коктейль", "amount_grams": 200},
+            {"sort_order": 4, "line_type": "ingredient", "content": "лук", "amount_grams": 200},
+            {"sort_order": 5, "line_type": "ingredient", "content": "болгарский перец", "amount_grams": 200}
+          ]
+        },
+        {
+          "sort_order": 2,
+          "meal_label": "Полдник",
+          "calories": 310,
+          "protein_g": 36,
+          "fat_g": 10,
+          "carb_g": 17,
+          "lines": [
+            {"sort_order": 0, "line_type": "dish_title", "content": "Творожная пицца (одна порция из запаса на 2 дня)"},
+            {"sort_order": 1, "line_type": "ingredient", "content": "творог обезжиренный", "amount_grams": 140},
+            {"sort_order": 2, "line_type": "ingredient", "content": "яйцо"},
+            {"sort_order": 3, "line_type": "ingredient", "content": "мука", "amount_grams": 40},
+            {"sort_order": 4, "line_type": "ingredient", "content": "соль, специи"},
+            {"sort_order": 5, "line_type": "ingredient", "content": "куриное филе", "amount_grams": 120},
+            {"sort_order": 6, "line_type": "ingredient", "content": "сыр", "amount_grams": 40},
+            {"sort_order": 7, "line_type": "ingredient", "content": "кетчуп"}
+          ]
+        },
+        {
+          "sort_order": 3,
+          "meal_label": "Ужин",
+          "calories": 238,
+          "protein_g": 14,
+          "fat_g": 10,
+          "carb_g": 26,
+          "lines": [
+            {"sort_order": 0, "line_type": "dish_title", "content": "Салат с сёмгой и сухариками (одна порция из запаса на 2 дня)"},
+            {"sort_order": 1, "line_type": "ingredient", "content": "сёмга слабосолёная", "amount_grams": 80},
+            {"sort_order": 2, "line_type": "ingredient", "content": "огурец", "amount_grams": 200},
+            {"sort_order": 3, "line_type": "ingredient", "content": "хлеб чёрный", "amount_grams": 40},
+            {"sort_order": 4, "line_type": "ingredient", "content": "оливковое масло", "amount_text": "2 ч.л."},
+            {"sort_order": 5, "line_type": "ingredient", "content": "болгарский перец", "amount_grams": 200},
+            {"sort_order": 6, "line_type": "ingredient", "content": "редис", "amount_grams": 200},
+            {"sort_order": 7, "line_type": "ingredient", "content": "помидоры", "amount_grams": 200}
+          ]
+        }
+      ]
+    },
+    {
+      "code": "rov_2021_ex1_day2",
+      "title": "Пример 1, день 2",
+      "source_book": "Худеем по науке",
+      "chapter_ref": "Гл. 22",
+      "example_number": 1,
+      "day_number": 2,
+      "target_calories": 1197,
+      "target_protein_g": 82,
+      "target_fat_g": 43,
+      "target_carb_g": 128,
+      "meals": [
+        {
+          "sort_order": 0,
+          "meal_label": "Завтрак",
+          "calories": 318,
+          "protein_g": 14,
+          "fat_g": 15,
+          "carb_g": 38,
+          "lines": [
+            {"sort_order": 0, "line_type": "dish_title", "content": "Ленивая овсянка с фруктами и орехами"},
+            {"sort_order": 1, "line_type": "ingredient", "content": "геркулес", "amount_grams": 30},
+            {"sort_order": 2, "line_type": "ingredient", "content": "йогурт натуральный 2,5%", "amount_grams": 200},
+            {"sort_order": 3, "line_type": "ingredient", "content": "арахис", "amount_grams": 15},
+            {"sort_order": 4, "line_type": "ingredient", "content": "банан", "amount_grams": 30}
+          ]
+        },
+        {
+          "sort_order": 1,
+          "meal_label": "Обед",
+          "calories": 331,
+          "protein_g": 18,
+          "fat_g": 8,
+          "carb_g": 47,
+          "lines": [
+            {"sort_order": 0, "line_type": "dish_title", "content": "Ризотто с морепродуктами (две порции из запаса)"},
+            {"sort_order": 1, "line_type": "note", "content": "См. рецепт дня 1 — двойная порция"}
+          ]
+        },
+        {
+          "sort_order": 2,
+          "meal_label": "Полдник",
+          "calories": 310,
+          "protein_g": 36,
+          "fat_g": 10,
+          "carb_g": 17,
+          "lines": [
+            {"sort_order": 0, "line_type": "dish_title", "content": "Творожная пицца (две порции из запаса)"},
+            {"sort_order": 1, "line_type": "note", "content": "См. рецепт дня 1"}
+          ]
+        },
+        {
+          "sort_order": 3,
+          "meal_label": "Ужин",
+          "calories": 238,
+          "protein_g": 14,
+          "fat_g": 10,
+          "carb_g": 26,
+          "lines": [
+            {"sort_order": 0, "line_type": "dish_title", "content": "Салат с сёмгой и сухариками (две порции из запаса)"},
+            {"sort_order": 1, "line_type": "note", "content": "См. рецепт дня 1"}
+          ]
+        }
+      ]
+    }
+  ]
+}
