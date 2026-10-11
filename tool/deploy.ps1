@@ -75,7 +75,8 @@ if ($SkipPush) {
     exit 0
 }
 
-$remote = git remote get-url origin 2>$null
+$remote = $null
+try { $remote = git remote get-url origin 2>$null } catch { $remote = $null }
 if (-not $remote) {
     Write-Host @'
 No git remote "origin".
