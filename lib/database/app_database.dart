@@ -5,6 +5,7 @@ import 'package:food_ration/database/tables/book_cooking.dart';
 import 'package:food_ration/database/tables/book_formulas.dart';
 import 'package:food_ration/database/tables/book_meal_plans.dart';
 import 'package:food_ration/database/tables/food_items.dart';
+import 'package:food_ration/database/tables/meal_planner.dart';
 import 'package:food_ration/database/tables/nutrient_catalog.dart';
 import 'package:food_ration/database/tables/nutrition_diary.dart';
 import 'package:food_ration/database/tables/pdf_meal_ration_tables.dart';
@@ -40,13 +41,17 @@ part 'app_database.g.dart';
     PdfMealSlotItems,
     UserProfiles,
     LoggedMeals,
+    PlanEntries,
+    PantryItems,
+    SettingsEntries,
+    CustomFoods,
   ],
 )
 class AppDatabase extends _$AppDatabase {
   AppDatabase(super.executor);
 
   @override
-  int get schemaVersion => 4;
+  int get schemaVersion => 6;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -85,6 +90,14 @@ class AppDatabase extends _$AppDatabase {
           if (from < 4) {
             await m.createTable(userProfiles);
             await m.createTable(loggedMeals);
+          }
+          if (from < 5) {
+            await m.createTable(planEntries);
+            await m.createTable(pantryItems);
+            await m.createTable(settingsEntries);
+          }
+          if (from < 6) {
+            await m.createTable(customFoods);
           }
         },
       );

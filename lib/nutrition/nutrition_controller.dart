@@ -16,7 +16,10 @@ class NutritionController extends ChangeNotifier {
     required this.catalog,
     DateTime Function()? clock,
   })  : _clock = clock ?? DateTime.now,
-        recommender = Recommender(catalog.recipes);
+        recommender = Recommender(catalog.bookRecipes) {
+    // Свои продукты появляются в каталоге — экраны должны перестроиться.
+    catalog.addListener(notifyListeners);
+  }
 
   final NutritionRepository repository;
   final RecipeCatalog catalog;
@@ -97,12 +100,13 @@ class NutritionController extends ChangeNotifier {
     ));
   }
 
-  Future<void> logCustom(String title, Macros macros, MealType meal) async {
+  Future<void> logCustom(String title, Macros macros, MealType meal, {String? portionLabel}) async {
     ensureToday();
     await repository.addEntry(DiaryEntry(
       dayKey: dayKey,
       meal: meal,
       title: title,
+      portionLabel: portionLabel,
       macros: macros,
     ));
   }
@@ -132,6 +136,7 @@ class NutritionController extends ChangeNotifier {
 
   @override
   void dispose() {
+    catalog.removeListener(notifyListeners);
     _sub?.cancel();
     super.dispose();
   }

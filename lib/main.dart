@@ -8,11 +8,16 @@ import 'package:food_ration/app.dart';
 import 'package:food_ration/database/app_database.dart';
 import 'package:food_ration/database/book_seed_loader.dart';
 import 'package:food_ration/database/open_connection.dart';
+import 'package:food_ration/foods/custom_foods.dart';
 import 'package:food_ration/meal_ration_import/meal_plan_pdf_pipeline.dart';
 import 'package:food_ration/nutrition/drift_nutrition_repository.dart';
 import 'package:food_ration/nutrition/nutrition_controller.dart';
 import 'package:food_ration/nutrition/nutrition_repository.dart';
 import 'package:food_ration/nutrition/recipe_catalog.dart';
+import 'package:food_ration/planner/drift_planner_repository.dart';
+import 'package:food_ration/planner/planner_controller.dart';
+import 'package:food_ration/planner/planner_repository.dart';
+import 'package:food_ration/settings/settings_controller.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -20,13 +25,16 @@ Future<void> main() async {
   final catalog = await RecipeCatalog.loadFromAssets();
 
   if (kIsWeb) {
-    // Drift на вебе не настроен: профиль и дневник живут в памяти до перезагрузки.
+    // Drift на вебе не настроен: все данные живут в памяти до перезагрузки.
     final controller = NutritionController(
       repository: InMemoryNutritionRepository(),
       catalog: catalog,
     );
-    await controller.init();
-    runApp(FoodRationApp(controller: controller));
+    final planner = PlannerController(repository: InMemoryPlannerRepository(), catalog: catalog);
+    final settings = SettingsController(InMemorySettingsStore());
+    final foods = CustomFoodsController(repository: InMemoryCustomFoodRepository(), catalog: catalog);
+    await Future.wait([controller.init(), planner.init(), settings.init(), foods.init()]);
+    runApp(FoodRationApp(controller: controller, planner: planner, settings: settings, foods: foods));
     return;
   }
 
@@ -64,6 +72,15 @@ Future<void> main() async {
     repository: DriftNutritionRepository(database),
     catalog: catalog,
   );
-  await controller.init();
-  runApp(FoodRationApp(controller: controller, database: database));
+  final planner = PlannerController(repository: DriftPlannerRepository(database), catalog: catalog);
+  final settings = SettingsController(DriftSettingsStore(database));
+  final foods = CustomFoodsController(repository: DriftCustomFoodRepository(database), catalog: catalog);
+  await Future.wait([controller.init(), planner.init(), settings.init(), foods.init()]);
+  runApp(FoodRationApp(
+    controller: controller,
+    planner: planner,
+    settings: settings,
+    foods: foods,
+    database: database,
+  ));
 }

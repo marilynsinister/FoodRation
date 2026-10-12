@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:drift/native.dart';
@@ -6,7 +7,9 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'package:food_ration/app.dart';
 import 'package:food_ration/database/app_database.dart' hide ActivityLevel;
+import 'package:food_ration/foods/custom_foods.dart';
 import 'package:food_ration/nutrition/drift_nutrition_repository.dart';
+import 'package:food_ration/nutrition/ingredient.dart';
 import 'package:food_ration/nutrition/kbju_calculator.dart';
 import 'package:food_ration/nutrition/macros.dart';
 import 'package:food_ration/nutrition/nutrition_controller.dart';
@@ -14,6 +17,10 @@ import 'package:food_ration/nutrition/nutrition_repository.dart';
 import 'package:food_ration/nutrition/recipe.dart';
 import 'package:food_ration/nutrition/recipe_catalog.dart';
 import 'package:food_ration/nutrition/recommender.dart';
+import 'package:food_ration/planner/planner_controller.dart';
+import 'package:food_ration/planner/planner_repository.dart';
+import 'package:food_ration/settings/settings_controller.dart';
+import 'package:food_ration/ui/recipe_detail_page.dart';
 import 'package:food_ration/ui/today_tab.dart';
 
 RecipeCatalog _loadCatalog() =>
@@ -120,13 +127,22 @@ void main() {
     tester.view.devicePixelRatio = 2.5;
     addTearDown(tester.view.reset);
 
+    final catalog = _loadCatalog();
     final controller = NutritionController(
       repository: InMemoryNutritionRepository(),
-      catalog: _loadCatalog(),
+      catalog: catalog,
       clock: () => DateTime(2026, 10, 11, 9),
     );
+    final planner = PlannerController(repository: InMemoryPlannerRepository(), catalog: catalog);
+    final settings = SettingsController(InMemorySettingsStore());
     await controller.init();
-    await tester.pumpWidget(FoodRationApp(controller: controller));
+    await planner.init();
+    await tester.pumpWidget(FoodRationApp(
+      controller: controller,
+      planner: planner,
+      settings: settings,
+      foods: CustomFoodsController(repository: InMemoryCustomFoodRepository(), catalog: catalog),
+    ));
     await tester.pumpAndSettle();
 
     // Без профиля открывается калькулятор.
@@ -156,5 +172,93 @@ void main() {
     final left = target.kcal - controller.entries.single.macros.kcal;
     expect(find.text('Осталось ${left.round()} ккал'), findsOneWidget);
     expect(find.text('Съедено сегодня'), findsOneWidget);
+  });
+
+  testWidgets('пересчёт порций в рецепте, план, тёмная тема', (tester) async {
+    tester.view.physicalSize = const Size(1080, 6000);
+    tester.view.devicePixelRatio = 2.5;
+    addTearDown(tester.view.reset);
+
+    final catalog = _loadCatalog();
+    final controller = NutritionController(
+      repository: InMemoryNutritionRepository(),
+      catalog: catalog,
+      clock: () => DateTime(2026, 10, 12, 9),
+    );
+    final planner = PlannerController(
+      repository: InMemoryPlannerRepository(),
+      catalog: catalog,
+      clock: () => DateTime(2026, 10, 12, 9),
+    );
+    final settings = SettingsController(InMemorySettingsStore());
+    await controller.init();
+    await planner.init();
+    await controller.saveProfile(NutritionProfile.initial);
+    await planner.addToPantry('Творог', 500, PantryUnit.g);
+    await tester.pumpWidget(FoodRationApp(
+      controller: controller,
+      planner: planner,
+      settings: settings,
+      foods: CustomFoodsController(repository: InMemoryCustomFoodRepository(), catalog: catalog),
+    ));
+    await tester.pumpAndSettle();
+
+    // Вкладки «Книга» больше нет, есть «План».
+    expect(find.text('Книга'), findsNothing);
+    expect(find.text('План'), findsOneWidget);
+
+    // Рецепт: две порции — ингредиенты удваиваются.
+    final recipe = catalog.recipes.firstWhere((r) =>
+        r.servings == 2 && r.parsedIngredients.any((i) => i.name == 'творог' && i.unit == QtyUnit.g));
+    final cottageLine = recipe.parsedIngredients.firstWhere((i) => i.name == 'творог');
+    final nav = tester.state<NavigatorState>(find.byType(Navigator).first);
+    unawaited(nav.push(MaterialPageRoute<void>(
+      builder: (_) => RecipeDetailPage(controller: controller, recipe: recipe),
+    )));
+    await tester.pumpAndSettle();
+    final plus = find.byKey(const Key('cook-plus'));
+    await tester.ensureVisible(plus);
+    await tester.tap(plus);
+    await tester.pumpAndSettle();
+    // Рецепт рассчитан на 2 порции: при 2 порциях количество как в книге, при 3 — ×1,5.
+    await tester.tap(plus);
+    await tester.pumpAndSettle();
+    final scale = recipe.ingredientScale(3);
+    expect(scale, 1.5);
+    expect(find.text('• ${cottageLine.scaled(scale)}'), findsOneWidget);
+    expect(cottageLine.scaled(scale), isNot(cottageLine.raw));
+
+    // В план на сегодня — продукты на 2 порции резервируются из запасов.
+    await tester.ensureVisible(find.byKey(const Key('add-to-plan')));
+    await tester.tap(find.byKey(const Key('add-to-plan')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('confirm-add-to-plan')));
+    await tester.pumpAndSettle();
+    expect(planner.plan.single.servings, 3);
+    final cottage = planner.pantry.single;
+    expect(planner.projection.planned[cottage.id], cottageLine.amount! * scale);
+    nav.pop();
+    await tester.pumpAndSettle();
+
+    // Приготовлено: творог списан, порция в дневнике.
+    await tester.tap(find.text('План'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text(recipe.name).first);
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('plan-cooked')));
+    await tester.pumpAndSettle();
+    expect(planner.plan.single.done, isTrue);
+    expect(planner.pantry.single.amount, lessThan(500));
+    expect(controller.entries.single.recipeKey, recipe.key);
+
+    // Настройки: тёмная тема в варианте AMOLED.
+    await tester.tap(find.byKey(const Key('open-settings')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Тёмная'));
+    await tester.tap(find.byKey(const Key('dark-amoled')));
+    await tester.pumpAndSettle();
+    final app = tester.widget<MaterialApp>(find.byType(MaterialApp));
+    expect(app.themeMode, ThemeMode.dark);
+    expect(app.darkTheme!.colorScheme.surface, Colors.black);
   });
 }

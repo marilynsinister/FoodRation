@@ -7,6 +7,7 @@ import 'package:food_ration/nutrition/recipe.dart';
 import 'package:food_ration/nutrition/recommender.dart';
 import 'package:food_ration/ui/charts.dart';
 import 'package:food_ration/ui/macro_widgets.dart';
+import 'package:food_ration/ui/own_food_sheet.dart';
 import 'package:food_ration/ui/recipe_detail_page.dart';
 import 'package:food_ration/ui/recipe_image.dart';
 
@@ -245,9 +246,10 @@ class _DiarySection extends StatelessWidget {
           children: [
             Expanded(child: Text('Съедено сегодня', style: theme.textTheme.titleMedium)),
             TextButton.icon(
-              onPressed: () => _addCustom(context),
+              key: const Key('add-own'),
+              onPressed: () => showOwnFoodSheet(context, controller, onQuickEntry: () => _addCustom(context)),
               icon: const Icon(Icons.add),
-              label: const Text('Вручную'),
+              label: const Text('Своё'),
             ),
           ],
         ),
@@ -465,7 +467,7 @@ class _DoneCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      color: Colors.green.shade50,
+      color: Theme.of(context).colorScheme.secondaryContainer,
       child: const Padding(
         padding: EdgeInsets.all(16),
         child: Text(

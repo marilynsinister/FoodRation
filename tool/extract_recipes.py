@@ -231,6 +231,9 @@ def parse_body(body: list[str]):
     for s in body:
         if re.match(r'^(Пищевая ценность|Калорийность|Белки|Жиры|Углеводы|Калории|КБЖУ)', s.lstrip('• '), re.IGNORECASE):
             continue
+        # Реклама сборников («Сборник на 21 день – 590 руб») — не ингредиент.
+        if re.search(r'\d\s*руб', s):
+            continue
         if is_step(s):
             in_steps = True
             steps.append(re.sub(r'^\d+\.\s*', '', s))

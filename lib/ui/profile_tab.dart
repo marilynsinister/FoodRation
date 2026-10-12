@@ -217,7 +217,9 @@ class _ResultCard extends StatelessWidget {
                 padding: const EdgeInsets.only(top: 6),
                 child: Text(
                   'Дефицит ограничен базовым обменом: есть меньше него не рекомендуется.',
-                  style: theme.textTheme.bodySmall?.copyWith(color: Colors.orange.shade800),
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: theme.brightness == Brightness.dark ? Colors.orange.shade300 : Colors.orange.shade800,
+                  ),
                 ),
               ),
           ],

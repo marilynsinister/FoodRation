@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:food_ration/nutrition/nutrition_controller.dart';
 import 'package:food_ration/nutrition/recipe.dart';
 import 'package:food_ration/nutrition/recommender.dart';
+import 'package:food_ration/ui/own_food_sheet.dart';
 import 'package:food_ration/ui/recipe_detail_page.dart';
 import 'package:food_ration/ui/recipe_image.dart';
 
@@ -92,6 +93,15 @@ class _RecipesTabState extends State<RecipesTab> {
                 scrollDirection: Axis.horizontal,
                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                 children: [
+                  Padding(
+                    padding: const EdgeInsets.only(right: 8),
+                    child: ActionChip(
+                      key: const Key('recipes-add-own'),
+                      avatar: const Icon(Icons.add, size: 18),
+                      label: const Text('Своё'),
+                      onPressed: () => showOwnFoodSheet(context, c),
+                    ),
+                  ),
                   if (day != null)
                     Padding(
                       padding: const EdgeInsets.only(right: 8),

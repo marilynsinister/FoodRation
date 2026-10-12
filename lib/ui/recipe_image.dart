@@ -35,6 +35,8 @@ class RecipeImage extends StatelessWidget {
     'Завтраки': Icons.free_breakfast,
     'Из рациона': Icons.restaurant,
     'Напитки': Icons.local_cafe,
+    'Мои продукты': Icons.inventory_2_outlined,
+    'Мои блюда': Icons.blender_outlined,
   };
 
   static const categoryCovers = {
@@ -67,7 +69,20 @@ class RecipeImage extends StatelessWidget {
         );
     final cover = categoryCovers[recipe.category];
     final fallback = cover == null ? placeholder : asset(cover, placeholder);
-    final image = recipe.image == null ? fallback : asset(recipe.image!, fallback);
+    final photo = recipe.photo;
+    final image = photo != null
+        ? Image.memory(
+            photo,
+            fit: BoxFit.cover,
+            width: width,
+            height: height,
+            cacheWidth: cacheWidth,
+            gaplessPlayback: true,
+            errorBuilder: (_, _, _) => fallback,
+          )
+        : recipe.image == null
+            ? fallback
+            : asset(recipe.image!, fallback);
     return ClipRRect(
       borderRadius: BorderRadius.circular(borderRadius),
       child: SizedBox(width: width, height: height, child: image),

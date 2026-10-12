@@ -66,5 +66,9 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+	<key>NSCameraUsageDescription</key>
+	<string>Чтобы сфотографировать свой продукт или блюдо.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Чтобы выбрать фото своего продукта или блюда.</string>
 </dict>
 </plist>
